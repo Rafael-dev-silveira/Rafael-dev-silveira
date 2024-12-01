@@ -1,0 +1,32 @@
+name: Scan for Viruses
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  virus-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Instalar ClamAV
+      - name: Install ClamAV
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clamav clamav-daemon
+
+      # Atualizar base de dados de vírus
+      - name: Update Virus Definitions
+        run: sudo freshclam
+
+      # Escanear o repositório
+      - name: Scan repository for viruses
+        run: clamscan -r --bell --quiet .
